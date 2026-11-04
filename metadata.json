@@ -1,0 +1,6 @@
+{
+  "name": "Anne - Asistente Android 16 & Suite Kotlin",
+  "description": "Arquitectura y código nativo en Kotlin para Android Studio: servicio de voz en segundo plano, watchdog de 6 minutos, emociones, permisos Android 16 y automatizaciones.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
