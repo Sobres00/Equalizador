@@ -19,124 +19,25 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
-      - name: Generar Estructura Android Nativa Completa
+      - name: Configurar Permisos y Recursos de Android
         run: |
-          mkdir -p app/src/main/java/com/asistente/anne
+          chmod +x gradlew || true
           mkdir -p app/src/main/res/values
+          mkdir -p app/src/main/res/xml
 
-          cat << 'EOF' > settings.gradle.kts
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = "AnneAssistant"
-          include(":app")
-          EOF
-
-          cat << 'EOF' > build.gradle.kts
-          plugins {
-              id("com.android.application") version "8.7.2" apply false
-              id("org.jetbrains.kotlin.android") version "2.0.21" apply false
-          }
-          EOF
-
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
-          }
-          android {
-              namespace = "com.asistente.anne"
-              compileSdk = 35
-              defaultConfig {
-                  applicationId = "com.asistente.anne"
-                  minSdk = 26
-                  targetSdk = 35
-                  versionCode = 1
-                  versionName = "1.0.0"
-              }
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
-          }
-          dependencies {
-              implementation("androidx.core:core-ktx:1.13.1")
-              implementation("androidx.appcompat:appcompat:1.7.0")
-              implementation("com.google.android.material:material:1.12.0")
-          }
-          EOF
-
-          cat << 'EOF' > app/src/main/AndroidManifest.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-              package="com.asistente.anne">
-              <uses-permission android:name="android.permission.RECORD_AUDIO" />
-              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-              <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-              <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-              <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-              <uses-permission android:name="android.permission.INTERNET" />
-              <application
-                  android:allowBackup="true"
-                  android:label="Anne Asistente"
-                  android:supportsRtl="true">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
-
+          # Asegurar que strings.xml contenga todas las cadenas requeridas por el servicio de accesibilidad
           cat << 'EOF' > app/src/main/res/values/strings.xml
+          <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="app_name">Anne Asistente</string>
+              <string name="accessibility_service_description">Permite a Anne asistir en la lectura de pantalla y toques de confirmación para WhatsApp y documentos.</string>
           </resources>
           EOF
 
-          cat << 'EOF' > app/src/main/java/com/asistente/anne/MainActivity.kt
-          package com.asistente.anne
-
-          import android.os.Bundle
-          import android.widget.TextView
-          import androidx.appcompat.app.AppCompatActivity
-
-          class MainActivity : AppCompatActivity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  val tv = TextView(this).apply {
-                      text = "Anne - Asistente Personal Android 16 Activa"
-                      textSize = 20f
-                      setPadding(40, 80, 40, 40)
-                  }
-                  setContentView(tv)
-              }
-          }
-          EOF
-
-          gradle wrapper --gradle-version 8.9
-
       - name: Compilar APK con Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Subir APK Compilado
         uses: actions/upload-artifact@v4
