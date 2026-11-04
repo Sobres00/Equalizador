@@ -21,13 +21,13 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Generar Clave de Firma y Recursos
+      - name: Generar Clave de Firma y Recursos Visuales
         run: |
           chmod +x gradlew || true
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/res/xml
 
-          # Generar certificado de firma oficial v1/v2/v3 para evitar bloqueo de Google Package Installer
+          # Generar certificado de firma oficial v1/v2/v3 para evitar bloqueo en Android 16
           keytool -genkeypair -v \
             -keystore anne-release.keystore \
             -alias anne \
@@ -38,12 +38,27 @@ jobs:
             -keypass anneassistant \
             -dname "CN=Anne Assistant, OU=AI, O=Anne, L=Global, ST=Global, C=ES"
 
-          # Asegurar que strings.xml contenga todas las cadenas requeridas por el servicio de accesibilidad
+          # Recursos de cadenas requeridos
           cat << 'EOF' > app/src/main/res/values/strings.xml
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="app_name">Anne Asistente</string>
               <string name="accessibility_service_description">Permite a Anne asistir en la lectura de pantalla y toques de confirmación para WhatsApp y documentos.</string>
+          </resources>
+          EOF
+
+          # Tema Material / AppCompat para evitar cierres inesperados en Android 16
+          cat << 'EOF' > app/src/main/res/values/themes.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="Theme.AnneAssistant" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+                  <item name="colorPrimary">#6366F1</item>
+                  <item name="colorPrimaryVariant">#4F46E5</item>
+                  <item name="colorOnPrimary">#FFFFFF</item>
+                  <item name="android:statusBarColor">#0F172A</item>
+                  <item name="android:navigationBarColor">#0F172A</item>
+                  <item name="android:windowBackground">#0F172A</item>
+              </style>
           </resources>
           EOF
 
