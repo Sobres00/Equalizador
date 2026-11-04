@@ -21,11 +21,22 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Configurar Permisos y Recursos de Android
+      - name: Generar Clave de Firma y Recursos
         run: |
           chmod +x gradlew || true
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/res/xml
+
+          # Generar certificado de firma oficial v1/v2/v3 para evitar bloqueo de Google Package Installer
+          keytool -genkeypair -v \
+            -keystore anne-release.keystore \
+            -alias anne \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass anneassistant \
+            -keypass anneassistant \
+            -dname "CN=Anne Assistant, OU=AI, O=Anne, L=Global, ST=Global, C=ES"
 
           # Asegurar que strings.xml contenga todas las cadenas requeridas por el servicio de accesibilidad
           cat << 'EOF' > app/src/main/res/values/strings.xml
@@ -36,11 +47,13 @@ jobs:
           </resources>
           EOF
 
-      - name: Compilar APK con Gradle
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+      - name: Compilar APKs con Gradle
+        run: ./gradlew assembleRelease assembleDebug --stacktrace --no-daemon
 
       - name: Subir APK Compilado
         uses: actions/upload-artifact@v4
         with:
           name: Anne-Assistant-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/debug/app-debug.apk
