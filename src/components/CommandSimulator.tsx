@@ -18,7 +18,7 @@ import { PdfPenguinDemo } from './PdfPenguinDemo';
 
 interface CommandSimulatorProps {
   currentEmotion: VoiceEmotion;
-  onResetWatchdog: () => void;
+  onResetWatchdog?: () => void;
   onSpeak: (text: string, emotion?: VoiceEmotion) => void;
 }
 
@@ -39,9 +39,9 @@ export const CommandSimulator: React.FC<CommandSimulatorProps> = ({
       id: 'init-1',
       timestamp: '00:01',
       sender: 'anne',
-      text: '¡Hola! Soy Anne. El temporizador de seguridad de 6 minutos está activo y el micrófono local está listo. Puedes decir "Anne" o probar los escenarios abajo.',
+      text: '¡Hola! Soy Anne en Modo Permanente 24/7. Sin límite de tiempo ni apagado automático. El micrófono local está siempre listo. Puedes decir "Anne" o probar los escenarios abajo.',
       emotion: 'amigable',
-      actionTag: 'SYSTEM_BOOT'
+      actionTag: 'SYSTEM_BOOT_24_7'
     }
   ]);
 
@@ -53,7 +53,7 @@ export const CommandSimulator: React.FC<CommandSimulatorProps> = ({
       timestamp: time,
     };
     setLogs((prev) => [...prev, newLog]);
-    onResetWatchdog();
+    if (onResetWatchdog) onResetWatchdog();
   };
 
   const handleExecuteCommand = (rawText: string) => {
@@ -383,7 +383,7 @@ Ruta: /storage/emulated/0/Download/migracion_pinguino_actualizado.pdf
                 setIsListeningWakeWord(!isListeningWakeWord);
                 if (!isListeningWakeWord) {
                   onSpeak('Dime, te escucho.', 'amigable');
-                  onResetWatchdog();
+                  if (onResetWatchdog) onResetWatchdog();
                 }
               }}
               className={`p-3 rounded-xl border transition-all ${

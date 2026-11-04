@@ -1,27 +1,15 @@
 import React from 'react';
-import { Shield, Radio, Volume2, Timer, Smartphone } from 'lucide-react';
+import { Shield, Radio, Volume2, Smartphone } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'simulator' | 'code' | 'voices' | 'permissions';
   setActiveTab: (tab: 'simulator' | 'code' | 'voices' | 'permissions') => void;
-  watchdogSeconds: number;
-  isWatchdogActive: boolean;
-  onResetWatchdog: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   setActiveTab,
-  watchdogSeconds,
-  isWatchdogActive,
-  onResetWatchdog,
 }) => {
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
-
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,8 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
                 <Smartphone className="w-5 h-5 text-indigo-400" />
               </div>
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isWatchdogActive ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${isWatchdogActive ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
             </div>
             <div>
@@ -45,28 +33,20 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 hidden sm:block">
-                Asistente por Voz, Watchdog de 6 min & Suite Kotlin
+                Asistente por Voz Permanente 24/7 (Sin Límite de Tiempo) & Suite Kotlin
               </p>
             </div>
           </div>
 
-          {/* Watchdog Timer Status Pill */}
+          {/* Continuous Status Pill (Sin restricción de tiempo) */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={onResetWatchdog}
-              title="Haz clic para reiniciar el temporizador a 6:00"
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-mono transition-all ${
-                isWatchdogActive
-                  ? 'bg-slate-900 border-indigo-500/30 text-indigo-300 hover:border-indigo-400'
-                  : 'bg-amber-950/40 border-amber-500/30 text-amber-300'
-              }`}
-            >
-              <Timer className={`w-3.5 h-3.5 ${isWatchdogActive ? 'animate-pulse text-indigo-400' : 'text-amber-400'}`} />
-              <span className="font-semibold">{formatTime(watchdogSeconds)}</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-                {isWatchdogActive ? 'Activo' : 'En Reposo'}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-mono bg-emerald-950/40 border-emerald-500/30 text-emerald-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-semibold">Modo Permanente 24/7</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-900/60 text-emerald-200">
+                Sin Límite de Tiempo
               </span>
-            </button>
+            </div>
           </div>
         </div>
 

@@ -385,13 +385,6 @@ class AnneVoiceService : Service() {
         }
     }
 
-    private fun handleSafetyTimeout() {
-        Log.w(TAG, "Tiempo de 6 minutos agotado. Entrando en reposo.")
-        wakeWordDetector.pauseListening()
-        geminiEngine.speak("Han pasado 6 minutos sin actividad. Entro en modo reposo para ahorrar batería.", GeminiVoiceEngine.Emotion.CALM)
-        updateNotification("En reposo tras 6 min de inactividad. Toca para reactivar.")
-    }
-
     private fun buildPersistentNotification(contentText: String): Notification {
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(

@@ -17,43 +17,8 @@ export default function App() {
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>('aoede');
   const [selectedEmotion, setSelectedEmotion] = useState<VoiceEmotion>('amigable');
 
-  // Watchdog timer state (6 minutos = 360 segundos)
-  const [watchdogSeconds, setWatchdogSeconds] = useState<number>(360);
-  const [isWatchdogActive, setIsWatchdogActive] = useState<boolean>(true);
-
-  // Interval reference for watchdog
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (isWatchdogActive && watchdogSeconds > 0) {
-      interval = setInterval(() => {
-        setWatchdogSeconds((prev) => {
-          if (prev <= 1) {
-            setIsWatchdogActive(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isWatchdogActive, watchdogSeconds]);
-
-  const handleResetWatchdog = () => {
-    setWatchdogSeconds(360);
-    setIsWatchdogActive(true);
-  };
-
-  const handleToggleWatchdogActive = () => {
-    if (isWatchdogActive) {
-      setIsWatchdogActive(false);
-      setWatchdogSeconds(0);
-    } else {
-      setIsWatchdogActive(true);
-      setWatchdogSeconds(360);
-    }
-  };
+  // Modo permanente 24/7 (Sin límite de tiempo)
+  const isAlwaysActive = true;
 
   // Browser speech synthesis playback with emotional modulation
   const handleSpeak = (text: string, emotion?: VoiceEmotion, customPitch?: number, customRate?: number) => {
@@ -101,7 +66,6 @@ export default function App() {
     utterance.rate = customRate !== undefined ? customRate : Math.max(0.7, Math.min(1.5, baseRate));
 
     window.speechSynthesis.speak(utterance);
-    handleResetWatchdog();
   };
 
   return (
@@ -110,26 +74,17 @@ export default function App() {
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        watchdogSeconds={watchdogSeconds}
-        isWatchdogActive={isWatchdogActive}
-        onResetWatchdog={handleResetWatchdog}
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Watchdog Bar (visible across tabs) */}
-        <WatchdogTimer
-          secondsRemaining={watchdogSeconds}
-          isActive={isWatchdogActive}
-          onReset={handleResetWatchdog}
-          onToggleActive={handleToggleWatchdogActive}
-        />
+        {/* Continuous Active 24/7 Bar */}
+        <WatchdogTimer isActive={isAlwaysActive} />
 
         {/* Tab 1: Interactive Command Simulator */}
         {activeTab === 'simulator' && (
           <CommandSimulator
             currentEmotion={selectedEmotion}
-            onResetWatchdog={handleResetWatchdog}
             onSpeak={handleSpeak}
           />
         )}
